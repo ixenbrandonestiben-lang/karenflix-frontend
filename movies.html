@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KarenFlix - Movies</title>
+  <link rel="icon" href="public/favicon.ico">
+  <link rel="stylesheet" href="assets/css/variables.css">
+  <link rel="stylesheet" href="assets/css/global.css">
+  <link rel="stylesheet" href="assets/css/components.css">
+  <link rel="stylesheet" href="assets/css/pages/home.css">
+</head>
+<body>
+  <header id="navbar"></header>
+
+  <main class="container movies-page">
+    <h1>Explore Movies</h1>
+
+    <nav aria-label="Filtros y búsqueda" class="filter-bar">
+      <div id="filter-categories"></div>
+      <search>
+        <input type="search" class="filter-bar__input" id="filter-search" placeholder="Search movies...">
+      </search>
+    </nav>
+
+    <section class="movie-grid" id="movie-grid"></section>
+
+    <section class="empty-state" id="empty-state" style="display:none;">
+      <p class="empty-state__icon">🎬</p>
+      <p>No movies found matching your criteria.</p>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>© 2024 KarenFlix. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <div id="toast-container"></div>
+
+  <script type="module">
+    import { initMoviesPage } from './assets/js/pages/movies.js';
+    initMoviesPage();
+  </script>
+</body>
+</html>

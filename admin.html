@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KarenFlix - Admin Panel</title>
+  <link rel="icon" href="public/favicon.ico">
+  <link rel="stylesheet" href="assets/css/variables.css">
+  <link rel="stylesheet" href="assets/css/global.css">
+  <link rel="stylesheet" href="assets/css/components.css">
+  <link rel="stylesheet" href="assets/css/pages/admin.css">
+</head>
+<body>
+  <header id="navbar"></header>
+
+  <main class="container admin-page">
+    <h1>Admin Panel</h1>
+
+    <section class="admin-stats" id="admin-stats"></section>
+
+    <nav class="admin-tabs" aria-label="Admin tabs">
+      <button class="admin-tabs__btn admin-tabs__btn--active" data-tab="pending">Pending Movies</button>
+      <button class="admin-tabs__btn" data-tab="add-movie">Add Movie</button>
+      <button class="admin-tabs__btn" data-tab="assign-actors">Assign Actors</button>
+    </nav>
+
+    <section id="tab-pending" class="admin-tab-content">
+      <div class="admin-table-wrapper">
+        <table class="admin-table" id="pending-table">
+          <thead>
+            <tr>
+              <th>Image</th>
+              <th>Title</th>
+              <th>Category</th>
+              <th>Year</th>
+              <th>Submitted By</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="pending-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="tab-add-movie" class="admin-tab-content" style="display:none;">
+      <article class="admin-form-card">
+        <h2>Register New Movie</h2>
+        <form id="add-movie-form">
+          <p class="form__group">
+            <label class="form__label" for="movie-title">Title</label>
+            <input type="text" class="form__input" id="movie-title" placeholder="Movie title..." required>
+          </p>
+          <p class="form__group">
+            <label class="form__label" for="movie-description">Description</label>
+            <textarea class="form__textarea" id="movie-description" rows="4" placeholder="Movie synopsis..." required></textarea>
+          </p>
+          <div class="form__row">
+            <p class="form__group">
+              <label class="form__label" for="movie-category">Category</label>
+              <select class="form__select" id="movie-category" required>
+                <option value="">Select category...</option>
+              </select>
+            </p>
+            <p class="form__group">
+              <label class="form__label" for="movie-year">Release Year</label>
+              <input type="number" class="form__input" id="movie-year" placeholder="2024" min="1900" max="2030" required>
+            </p>
+          </div>
+          <p class="form__group">
+            <label class="form__label" for="movie-image">Image URL</label>
+            <input type="url" class="form__input" id="movie-image" placeholder="https://...">
+          </p>
+          <button type="submit" class="btn btn--primary">Add Movie</button>
+        </form>
+      </article>
+    </section>
+
+    <section id="tab-assign-actors" class="admin-tab-content" style="display:none;">
+      <article class="admin-form-card">
+        <h2>Assign Actor to Movie</h2>
+        <form id="assign-actor-form">
+          <p class="form__group">
+            <label class="form__label" for="assign-movie">Movie</label>
+            <select class="form__select" id="assign-movie" required>
+              <option value="">Select movie...</option>
+            </select>
+          </p>
+          <p class="form__group">
+            <label class="form__label" for="assign-actor">Actor</label>
+            <select class="form__select" id="assign-actor" required>
+              <option value="">Select actor...</option>
+            </select>
+          </p>
+          <p class="form__group">
+            <label class="form__label" for="assign-character">Character Name</label>
+            <input type="text" class="form__input" id="assign-character" placeholder="Character name..." required>
+          </p>
+          <button type="submit" class="btn btn--primary">Assign Actor</button>
+        </form>
+      </article>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>© 2024 KarenFlix. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <div id="toast-container"></div>
+
+  <script type="module">
+    import { initAdminPage } from './assets/js/pages/admin.js';
+    initAdminPage();
+  </script>
+</body>
+</html>
