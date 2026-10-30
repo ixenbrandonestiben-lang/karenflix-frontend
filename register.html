@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KarenFlix - Sign Up</title>
+  <link rel="icon" href="public/favicon.ico">
+  <link rel="stylesheet" href="assets/css/variables.css">
+  <link rel="stylesheet" href="assets/css/global.css">
+  <link rel="stylesheet" href="assets/css/components.css">
+  <link rel="stylesheet" href="assets/css/pages/auth.css">
+</head>
+<body class="auth-page">
+  <div class="auth-page__bg"></div>
+
+  <header class="auth-nav">
+    <a href="index.html" class="auth-nav__logo">KARENFLIX</a>
+  </header>
+
+  <main class="auth-container">
+    <article class="auth-card">
+      <h1>Sign Up</h1>
+      <form id="register-form" novalidate>
+        <p class="form__group">
+          <input type="text" class="form__input" id="reg-username" placeholder=" " required>
+          <label class="form__label form__label--float" for="reg-username">Username</label>
+          <span class="form__error" id="reg-username-error"></span>
+        </p>
+        <p class="form__group">
+          <input type="email" class="form__input" id="reg-email" placeholder=" " required>
+          <label class="form__label form__label--float" for="reg-email">Email</label>
+          <span class="form__error" id="reg-email-error"></span>
+        </p>
+        <p class="form__group">
+          <input type="password" class="form__input" id="reg-password" placeholder=" " required minlength="6">
+          <label class="form__label form__label--float" for="reg-password">Password</label>
+          <span class="form__error" id="reg-password-error"></span>
+        </p>
+        <p class="form__group">
+          <input type="password" class="form__input" id="reg-confirm" placeholder=" " required>
+          <label class="form__label form__label--float" for="reg-confirm">Confirm Password</label>
+          <span class="form__error" id="reg-confirm-error"></span>
+        </p>
+        <button type="submit" class="btn btn--primary btn--full">Sign Up</button>
+        <footer class="auth-card__footer">
+          <p>Already have an account? <a href="login.html" class="auth-card__link">Sign in</a></p>
+        </footer>
+      </form>
+    </article>
+  </main>
+
+  <div id="toast-container"></div>
+
+  <script type="module">
+    import { initRegisterPage } from './assets/js/pages/auth.js';
+    initRegisterPage();
+  </script>
+</body>
+</html>
