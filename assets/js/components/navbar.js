@@ -2,6 +2,7 @@
 import { isLoggedIn, getUser, isAdmin, clearSession } from '../utils/authStorage.js';
 import { showToast } from '../utils/notify.js';
 import { initTheme, getTheme, toggleTheme } from '../utils/theme.js';
+import { getHomeUrl, getPageUrl } from '../utils/pageRoutes.js';
 
 export function renderNavbar(activePage) {
   initTheme();
@@ -43,24 +44,24 @@ export function renderNavbar(activePage) {
         </div>
       </div>`;
   } else {
-    actionsHTML = `<a href="login.html" class="btn btn--sm btn--primary">Sign In</a>`;
+    actionsHTML = `<a href="${getPageUrl('login.html')}" class="btn btn--sm btn--primary">Sign In</a>`;
   }
 
   const adminLinkDesktop = admin
-    ? `<a href="admin.html" class="${linkClass('admin')}">Admin</a>`
+    ? `<a href="${getPageUrl('admin.html')}" class="${linkClass('admin')}">Admin</a>`
     : '';
   const adminLinkMobile = admin
-    ? `<a href="admin.html" class="${mobileLinkClass('admin')}">Admin</a>`
+    ? `<a href="${getPageUrl('admin.html')}" class="${mobileLinkClass('admin')}">Admin</a>`
     : '';
 
   container.innerHTML = `
     <nav class="navbar" id="main-navbar">
       <div class="navbar__inner">
-        <a href="index.html" class="navbar__logo">KARENFLIX</a>
+        <a href="${getHomeUrl()}" class="navbar__logo">KARENFLIX</a>
         <div class="navbar__nav">
-          <a href="index.html" class="${linkClass('home')}">Home</a>
-          <a href="movies.html" class="${linkClass('movies')}">Movies</a>
-          <a href="mylist.html" class="${linkClass('mylist')}">My List</a>
+          <a href="${getHomeUrl()}" class="${linkClass('home')}">Home</a>
+          <a href="${getPageUrl('movies.html')}" class="${linkClass('movies')}">Movies</a>
+          <a href="${getPageUrl('mylist.html')}" class="${linkClass('mylist')}">My List</a>
           ${adminLinkDesktop}
         </div>
         <div class="navbar__search" id="navbar-search">
@@ -81,16 +82,16 @@ export function renderNavbar(activePage) {
       </div>
     </nav>
     <div class="navbar__mobile-menu" id="mobile-menu">
-      <a href="index.html" class="${mobileLinkClass('home')}">Home</a>
-      <a href="movies.html" class="${mobileLinkClass('movies')}">Movies</a>
-      <a href="mylist.html" class="${mobileLinkClass('mylist')}">My List</a>
+      <a href="${getHomeUrl()}" class="${mobileLinkClass('home')}">Home</a>
+      <a href="${getPageUrl('movies.html')}" class="${mobileLinkClass('movies')}">Movies</a>
+      <a href="${getPageUrl('mylist.html')}" class="${mobileLinkClass('mylist')}">My List</a>
       ${adminLinkMobile}
       <button class="navbar__mobile-link" id="mobile-theme-toggle">
         Cambiar Tema: ${themeIcon}
       </button>
       ${loggedIn
         ? `<button class="navbar__mobile-link navbar__mobile-link--danger" id="mobile-logout-btn">Sign Out</button>`
-        : `<a href="login.html" class="navbar__mobile-link">Sign In</a>`
+        : `<a href="${getPageUrl('login.html')}" class="navbar__mobile-link">Sign In</a>`
       }
     </div>`;
 
@@ -145,7 +146,7 @@ function setupSearchSubmit() {
     if (e.key === 'Enter') {
       const query = input.value.trim();
       if (query) {
-        window.location.href = `movies.html?search=${encodeURIComponent(query)}`;
+        window.location.href = `${getPageUrl('movies.html')}?search=${encodeURIComponent(query)}`;
       }
     }
   });
@@ -178,7 +179,7 @@ function setupLogout() {
     clearSession();
     showToast('Sesion cerrada correctamente', 'success');
     setTimeout(() => {
-      window.location.href = 'index.html';
+      window.location.href = getHomeUrl();
     }, 600);
   };
 

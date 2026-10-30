@@ -1,5 +1,6 @@
 // Componente de tarjeta de pelicula
 import { showToast } from '../utils/notify.js';
+import { getPageUrl } from '../utils/pageRoutes.js';
 
 export function createMovieCard(movie, options = {}) {
   const {
@@ -66,7 +67,7 @@ export function createMovieCard(movie, options = {}) {
 
   if (linkToDetail) {
     card.addEventListener('click', () => {
-      window.location.href = `detail.html?id=${movie.id}`;
+      window.location.href = `${getPageUrl('detail.html')}?id=${movie.id}`;
     });
   }
 

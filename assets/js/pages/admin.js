@@ -4,6 +4,7 @@ import { getActors, assignActor } from '../api/actor.api.js';
 import { renderNavbar } from '../components/navbar.js';
 import { isAdmin, isLoggedIn } from '../utils/authStorage.js';
 import { showToast } from '../utils/notify.js';
+import { getPageUrl } from '../utils/pageRoutes.js';
 
 let allMovies = [];
 let categoriesList = [];
@@ -15,7 +16,7 @@ export async function initAdminPage() {
   if (!isLoggedIn() || !isAdmin()) {
     showToast('Acceso restringido a administradores', 'error');
     setTimeout(() => {
-      window.location.href = 'login.html';
+      window.location.href = getPageUrl('login.html');
     }, 1200);
     return;
   }

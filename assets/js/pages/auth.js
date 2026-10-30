@@ -3,6 +3,7 @@ import { login, register } from '../api/auth.api.js';
 import { setSession } from '../utils/authStorage.js';
 import { showToast } from '../utils/notify.js';
 import { validateEmail, validatePassword, validateRequired } from '../utils/validators.js';
+import { getHomeUrl, getPageUrl } from '../utils/pageRoutes.js';
 
 function setFieldError(inputEl, errorEl, message) {
   if (inputEl) inputEl.classList.add('form__input--error');
@@ -14,6 +15,19 @@ function clearFieldErrors(form) {
   inputs.forEach(i => i.classList.remove('form__input--error'));
   const errors = form.querySelectorAll('.form__error');
   errors.forEach(e => { e.textContent = ''; });
+}
+
+function saveAuthenticatedSession(response) {
+  const payload = response?.data ?? response;
+  const user = payload?.user ?? (typeof payload?.username === 'string' ? payload : null);
+  const jwt = payload?.jwt ?? payload?.token ?? response?.jwt ?? response?.token;
+
+  if (!user || typeof jwt !== 'string' || !jwt) {
+    throw new Error('El servidor devolvió una respuesta de inicio de sesión inválida.');
+  }
+
+  setSession({ user, jwt });
+  return user;
 }
 
 export function initLoginPage() {
@@ -60,20 +74,21 @@ export function initLoginPage() {
       const submitBtn = form.querySelector('button[type="submit"]');
       if (submitBtn) submitBtn.classList.add('btn--loading');
 
+      const emailValidation = validateEmail(emailOrUser);
+      const credentials = emailValidation.valid
+        ? { email: emailOrUser }
+        : { username: emailOrUser };
       const response = await login({
-        email: emailOrUser,
+        ...credentials,
         password: password,
       });
 
-      setSession({
-        user: response.user,
-        jwt: response.jwt,
-      });
+      const user = saveAuthenticatedSession(response);
 
-      showToast(`Bienvenido de nuevo, ${response.user.username}!`, 'success');
+      showToast(`Bienvenido de nuevo, ${user.username || user.email || emailOrUser}!`, 'success');
 
       setTimeout(() => {
-        window.location.href = response.user.role === 'admin' ? 'admin.html' : 'index.html';
+        window.location.href = user.role === 'admin' ? getPageUrl('admin.html') : getHomeUrl();
       }, 500);
     } catch (err) {
       showToast(err.message || 'Error al iniciar sesion. Verifica tus datos.', 'error');
@@ -152,16 +167,13 @@ export function initRegisterPage() {
         password,
       });
 
-      const loginRes = await login({ email, password });
-      setSession({
-        user: loginRes.user,
-        jwt: loginRes.jwt,
-      });
+      const loginResponse = await login({ email, password });
+      saveAuthenticatedSession(loginResponse);
 
       showToast('Cuenta creada con exito!', 'success');
 
       setTimeout(() => {
-        window.location.href = 'index.html';
+        window.location.href = getHomeUrl();
       }, 500);
     } catch (err) {
       showToast(err.message || 'Error al registrar cuenta.', 'error');
