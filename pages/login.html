@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KarenFlix - Sign In</title>
+  <link rel="icon" href="../public/favicon.ico">
+  <link rel="stylesheet" href="../assets/css/variables.css">
+  <link rel="stylesheet" href="../assets/css/global.css">
+  <link rel="stylesheet" href="../assets/css/components.css">
+  <link rel="stylesheet" href="../assets/css/pages/auth.css">
+</head>
+<body class="auth-page">
+  <div class="auth-page__bg"></div>
+
+  <header class="auth-nav">
+    <a href="../index.html" class="auth-nav__logo">KARENFLIX</a>
+  </header>
+
+  <main class="auth-container">
+    <article class="auth-card">
+      <h1>Sign In</h1>
+      <form id="login-form" novalidate>
+        <p class="form__group">
+          <input type="text" class="form__input" id="login-email" placeholder=" " required>
+          <label class="form__label form__label--float" for="login-email">Email or Username</label>
+          <span class="form__error" id="login-email-error"></span>
+        </p>
+        <p class="form__group">
+          <input type="password" class="form__input" id="login-password" placeholder=" " required>
+          <label class="form__label form__label--float" for="login-password">Password</label>
+          <span class="form__error" id="login-password-error"></span>
+        </p>
+        <button type="submit" class="btn btn--primary btn--full">Sign In</button>
+        <footer class="auth-card__footer">
+          <p>New to KarenFlix? <a href="register.html" class="auth-card__link">Sign up now</a></p>
+        </footer>
+      </form>
+    </article>
+  </main>
+
+  <div id="toast-container"></div>
+
+  <script type="module">
+    import { initLoginPage } from '../assets/js/pages/auth.js';
+    initLoginPage();
+  </script>
+</body>
+</html>

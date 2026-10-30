@@ -5,6 +5,7 @@ import { renderNavbar } from '../components/navbar.js';
 import { createMovieCard } from '../components/movieCard.js';
 import { showToast } from '../utils/notify.js';
 import { isLoggedIn } from '../utils/authStorage.js';
+import { getPageUrl } from '../utils/pageRoutes.js';
 
 export async function initHomePage() {
   renderNavbar('home');
@@ -89,7 +90,7 @@ function renderHeroBanner(approvedMovies) {
   const watchBtn = document.getElementById('hero-watch');
   if (watchBtn) {
     watchBtn.onclick = () => {
-      window.location.href = `detail.html?id=${hero.id}`;
+      window.location.href = `${getPageUrl('detail.html')}?id=${hero.id}`;
     };
   }
 
@@ -161,7 +162,7 @@ function renderCarousels(approvedMovies) {
     .slice(0, 8);
 
   container.appendChild(
-    buildCarouselSection('Tendencias', trending, 'movies.html')
+    buildCarouselSection('Tendencias', trending, getPageUrl('movies.html'))
   );
 
   const categoriesMap = new Map();
@@ -175,7 +176,7 @@ function renderCarousels(approvedMovies) {
     const section = buildCarouselSection(
       categoryName,
       categoryMovies,
-      `movies.html?category=${encodeURIComponent(categoryName)}`
+      `${getPageUrl('movies.html')}?category=${encodeURIComponent(categoryName)}`
     );
     container.appendChild(section);
   });
