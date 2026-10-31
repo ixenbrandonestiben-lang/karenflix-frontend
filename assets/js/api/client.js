@@ -10,7 +10,7 @@ async function request(endpoint, options = {}) {
     ...options.headers,
   };
   if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
+    headers.Authorization = 'Bearer ' + token;
   }
 
   const res = await fetch(`${BASE_URL}${endpoint}`, {
@@ -25,7 +25,10 @@ async function request(endpoint, options = {}) {
 
   // Handle 204 No Content
   if (res.status === 204) return null;
-  return res.json();
+  const payload = await res.json();
+  return payload && typeof payload === 'object' && 'data' in payload
+    ? payload.data
+    : payload;
 }
 
 export const api = {
