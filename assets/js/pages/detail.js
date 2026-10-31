@@ -92,11 +92,23 @@ function populateMovieHero(movie) {
 
   const metaEl = document.getElementById('detail-meta');
   if (metaEl) {
+    const directorName = typeof movie.director === 'string'
+      ? movie.director
+      : movie.director?.name;
+    const duration = movie.durationMinutes || movie.duration_minutes;
     metaEl.innerHTML = `
       <span class="badge badge--accent">${movie.category || 'General'}</span>
       <span>${movie.releaseYear || movie.release_year || ''}</span>
+      ${duration ? `<span>${duration} min</span>` : ''}
+      ${movie.ageRating || movie.age_rating ? `<span>${movie.ageRating || movie.age_rating}</span>` : ''}
       <span class="badge badge--${movie.status === 'approved' ? 'success' : 'warning'}">${movie.status || 'approved'}</span>
     `;
+    if (directorName) {
+      const director = document.createElement('span');
+      director.className = 'detail-hero__director';
+      director.textContent = `Dirigida por ${directorName}`;
+      metaEl.append(director);
+    }
   }
 
   const ratingEl = document.getElementById('detail-rating');

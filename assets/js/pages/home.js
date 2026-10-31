@@ -1,6 +1,6 @@
 // Pagina de inicio: Hero Banner y carruseles
 import { getMovies } from '../api/movie.api.js';
-import { addFavorite } from '../api/favorite.api.js';
+import { addFavorite, getFavorites, removeFavorite } from '../api/favorite.api.js';
 import { renderNavbar } from '../components/navbar.js';
 import { createMovieCard } from '../components/movieCard.js';
 import { showToast } from '../utils/notify.js';
@@ -16,7 +16,19 @@ export async function initHomePage() {
   }
 
   try {
-    const movies = await getMovies();
+    const [movies, favorites] = await Promise.all([
+      getMovies(),
+      isLoggedIn()
+        ? getFavorites().catch(error => {
+          console.warn('Error al cargar favoritos:', error);
+          return [];
+        })
+        : Promise.resolve([]),
+    ]);
+    const favoritesByMovieId = new Map(
+      (Array.isArray(favorites) ? favorites : [])
+        .map(favorite => [String(favorite.movie_id ?? favorite.movie?.id), favorite])
+    );
     const approvedMovies = Array.isArray(movies)
       ? movies.filter(m => m.status === 'approved')
       : [];
@@ -24,8 +36,8 @@ export async function initHomePage() {
     if (carouselsContainer) carouselsContainer.innerHTML = '';
 
     if (approvedMovies.length > 0) {
-      renderHeroBanner(approvedMovies);
-      renderCarousels(approvedMovies);
+      renderHeroBanner(approvedMovies, favoritesByMovieId);
+      renderCarousels(approvedMovies, favoritesByMovieId);
     } else {
       if (carouselsContainer) {
         carouselsContainer.innerHTML = `
@@ -53,7 +65,7 @@ export async function initHomePage() {
   }
 }
 
-function renderHeroBanner(approvedMovies) {
+function renderHeroBanner(approvedMovies, favoritesByMovieId) {
   if (approvedMovies.length === 0) return;
 
   const hero = approvedMovies.reduce((best, movie) =>
@@ -96,22 +108,39 @@ function renderHeroBanner(approvedMovies) {
 
   const addListBtn = document.getElementById('hero-add-list');
   if (addListBtn) {
+    let favoriteId = favoritesByMovieId.get(String(hero.id))?.id ?? null;
+    if (favoriteId) {
+      addListBtn.innerHTML = '<span>✓</span> En Mi Lista';
+      addListBtn.classList.replace('btn--secondary', 'btn--ghost');
+    }
+
     addListBtn.onclick = async () => {
       if (!isLoggedIn()) {
         showToast('Inicia sesion para guardar en tu lista', 'warning');
         return;
       }
       try {
-        await addFavorite(hero.id);
-        showToast(`"${hero.title}" agregada a Mi Lista`, 'success');
+        if (favoriteId) {
+          await removeFavorite(favoriteId);
+          favoriteId = null;
+          addListBtn.innerHTML = '<span>+</span> Mi Lista';
+          addListBtn.classList.replace('btn--ghost', 'btn--secondary');
+          showToast('Eliminada de Mi Lista', 'info');
+        } else {
+          const favorite = await addFavorite(hero.id);
+          favoriteId = favorite?.id ?? null;
+          addListBtn.innerHTML = '<span>✓</span> En Mi Lista';
+          addListBtn.classList.replace('btn--secondary', 'btn--ghost');
+          showToast(`"${hero.title}" agregada a Mi Lista`, 'success');
+        }
       } catch (err) {
-        showToast(err.message || 'Error al agregar a la lista', 'error');
+        showToast(err.message || 'Error al actualizar Mi Lista', 'error');
       }
     };
   }
 }
 
-function buildCarouselSection(categoryName, movies, linkHref) {
+function buildCarouselSection(categoryName, movies, linkHref, favoritesByMovieId) {
   const section = document.createElement('section');
   section.className = 'content-row';
 
@@ -134,7 +163,12 @@ function buildCarouselSection(categoryName, movies, linkHref) {
   track.className = 'content-row__track';
 
   movies.forEach(movie => {
-    const card = createMovieCard(movie, { showFavorite: true });
+    const favoriteId = favoritesByMovieId.get(String(movie.id))?.id ?? null;
+    const card = createMovieCard(movie, {
+      showFavorite: true,
+      favoriteActive: Boolean(favoriteId),
+      favoriteId,
+    });
     track.appendChild(card);
   });
 
@@ -153,7 +187,7 @@ function buildCarouselSection(categoryName, movies, linkHref) {
   return section;
 }
 
-function renderCarousels(approvedMovies) {
+function renderCarousels(approvedMovies, favoritesByMovieId) {
   const container = document.getElementById('carousels');
   if (!container) return;
 
@@ -162,7 +196,7 @@ function renderCarousels(approvedMovies) {
     .slice(0, 8);
 
   container.appendChild(
-    buildCarouselSection('Tendencias', trending, getPageUrl('movies.html'))
+    buildCarouselSection('Tendencias', trending, getPageUrl('movies.html'), favoritesByMovieId)
   );
 
   const categoriesMap = new Map();
@@ -176,7 +210,8 @@ function renderCarousels(approvedMovies) {
     const section = buildCarouselSection(
       categoryName,
       categoryMovies,
-      `${getPageUrl('movies.html')}?category=${encodeURIComponent(categoryName)}`
+      `${getPageUrl('movies.html')}?category=${encodeURIComponent(categoryName)}`,
+      favoritesByMovieId
     );
     container.appendChild(section);
   });

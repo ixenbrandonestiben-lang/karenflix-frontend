@@ -11,6 +11,7 @@ karenflix-frontend/
 │   ├── login.html
 │   ├── movies.html
 │   ├── mylist.html
+│   ├── profile.html
 │   └── register.html
 ├── assets/
 │   ├── css/

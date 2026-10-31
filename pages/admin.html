@@ -21,7 +21,12 @@
     <nav class="admin-tabs" aria-label="Admin tabs">
       <button class="admin-tabs__btn admin-tabs__btn--active" data-tab="pending">Pending Movies</button>
       <button class="admin-tabs__btn" data-tab="add-movie">Add Movie</button>
+      <button class="admin-tabs__btn" data-tab="manage-movies">Movies</button>
       <button class="admin-tabs__btn" data-tab="assign-actors">Assign Actors</button>
+      <button class="admin-tabs__btn" data-tab="manage-actors">Actors</button>
+      <button class="admin-tabs__btn" data-tab="manage-directors">Directors</button>
+      <button class="admin-tabs__btn" data-tab="manage-categories">Categories</button>
+      <button class="admin-tabs__btn" data-tab="manage-users">Users</button>
     </nav>
 
     <section id="tab-pending" class="admin-tab-content">
@@ -45,8 +50,9 @@
 
     <section id="tab-add-movie" class="admin-tab-content" style="display:none;">
       <article class="admin-form-card">
-        <h2>Register New Movie</h2>
+        <h2 id="movie-form-title">Register New Movie</h2>
         <form id="add-movie-form">
+          <input type="hidden" id="movie-id">
           <p class="form__group">
             <label class="form__label" for="movie-title">Title</label>
             <input type="text" class="form__input" id="movie-title" placeholder="Movie title..." required>
@@ -63,23 +69,48 @@
               </select>
             </p>
             <p class="form__group">
+              <label class="form__label" for="movie-director">Director</label>
+              <select class="form__select" id="movie-director" required>
+                <option value="">Select director...</option>
+              </select>
+            </p>
+          </div>
+          <div class="form__row">
+            <p class="form__group">
               <label class="form__label" for="movie-year">Release Year</label>
-              <input type="number" class="form__input" id="movie-year" placeholder="2024" min="1900" max="2030" required>
+              <input type="number" class="form__input" id="movie-year" placeholder="2024" min="1888" max="2030" required>
+            </p>
+            <p class="form__group">
+              <label class="form__label" for="movie-duration">Duration (minutes)</label>
+              <input type="number" class="form__input" id="movie-duration" min="1" max="1000" required>
             </p>
           </div>
           <p class="form__group">
             <label class="form__label" for="movie-image">Image URL</label>
-            <input type="url" class="form__input" id="movie-image" placeholder="https://...">
+            <input type="url" class="form__input" id="movie-image" maxlength="255" placeholder="https://..." required>
           </p>
-          <button type="submit" class="btn btn--primary">Add Movie</button>
+          <div class="admin-table__actions">
+            <button type="submit" class="btn btn--primary" id="movie-submit">Add Movie</button>
+            <button type="button" class="btn btn--ghost" id="movie-cancel" style="display:none;">Cancel</button>
+          </div>
         </form>
       </article>
     </section>
 
+    <section id="tab-manage-movies" class="admin-tab-content" style="display:none;">
+      <div class="admin-table-wrapper">
+        <table class="admin-table">
+          <thead><tr><th>Title</th><th>Director</th><th>Category</th><th>Year</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="movies-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+
     <section id="tab-assign-actors" class="admin-tab-content" style="display:none;">
       <article class="admin-form-card">
-        <h2>Assign Actor to Movie</h2>
+        <h2 id="assign-actor-title">Assign Actor to Movie</h2>
         <form id="assign-actor-form">
+          <input type="hidden" id="assign-actor-id">
           <p class="form__group">
             <label class="form__label" for="assign-movie">Movie</label>
             <select class="form__select" id="assign-movie" required>
@@ -94,11 +125,154 @@
           </p>
           <p class="form__group">
             <label class="form__label" for="assign-character">Character Name</label>
-            <input type="text" class="form__input" id="assign-character" placeholder="Character name..." required>
+            <input type="text" class="form__input" id="assign-character" placeholder="Character name...">
           </p>
-          <button type="submit" class="btn btn--primary">Assign Actor</button>
+          <div class="admin-table__actions">
+            <button type="submit" class="btn btn--primary" id="assign-actor-submit">Assign Actor</button>
+            <button type="button" class="btn btn--ghost" id="assign-actor-cancel" style="display:none;">Cancel</button>
+          </div>
         </form>
       </article>
+      <div class="admin-table-wrapper admin-management-list">
+        <table class="admin-table">
+          <thead><tr><th>Actor</th><th>Character</th><th>Movie</th><th>Actions</th></tr></thead>
+          <tbody id="cast-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="tab-manage-actors" class="admin-tab-content" style="display:none;">
+      <article class="admin-form-card">
+        <h2 id="actor-form-title">Create Actor</h2>
+        <form id="actor-form">
+          <input type="hidden" id="actor-id">
+          <p class="form__group">
+            <label class="form__label" for="actor-name">Name</label>
+            <input type="text" class="form__input" id="actor-name" minlength="2" maxlength="100" required>
+          </p>
+          <p class="form__group">
+            <label class="form__label" for="actor-biography">Biography</label>
+            <textarea class="form__textarea" id="actor-biography" rows="4" minlength="10" maxlength="500" required></textarea>
+          </p>
+          <div class="form__row">
+            <p class="form__group">
+              <label class="form__label" for="actor-birth-date">Birth Date</label>
+              <input type="date" class="form__input" id="actor-birth-date">
+            </p>
+            <p class="form__group">
+              <label class="form__label" for="actor-photo-url">Photo URL</label>
+              <input type="url" class="form__input" id="actor-photo-url" maxlength="255" placeholder="https://...">
+            </p>
+          </div>
+          <div class="admin-table__actions">
+            <button type="submit" class="btn btn--primary" id="actor-submit">Create Actor</button>
+            <button type="button" class="btn btn--ghost" id="actor-cancel" style="display:none;">Cancel</button>
+          </div>
+        </form>
+      </article>
+      <div class="admin-table-wrapper admin-management-list">
+        <table class="admin-table">
+          <thead><tr><th>Name</th><th>Biography</th><th>Birth Date</th><th>Actions</th></tr></thead>
+          <tbody id="actors-tbody"></tbody>
+        </table>
+      </div>
+      <section class="admin-filmography" id="actor-filmography" hidden>
+        <h2 id="actor-filmography-title">Actor filmography</h2>
+        <ul id="actor-filmography-list"></ul>
+      </section>
+    </section>
+
+    <section id="tab-manage-directors" class="admin-tab-content" style="display:none;">
+      <article class="admin-form-card">
+        <h2 id="director-form-title">Create Director</h2>
+        <form id="director-form">
+          <input type="hidden" id="director-id">
+          <p class="form__group">
+            <label class="form__label" for="director-name">Name</label>
+            <input type="text" class="form__input" id="director-name" minlength="2" maxlength="100" required>
+          </p>
+          <p class="form__group">
+            <label class="form__label" for="director-biography">Biography</label>
+            <textarea class="form__textarea" id="director-biography" rows="4" maxlength="5000"></textarea>
+          </p>
+          <p class="form__group">
+            <label class="form__label" for="director-photo-url">Photo URL</label>
+            <input type="url" class="form__input" id="director-photo-url" maxlength="255" placeholder="https://...">
+          </p>
+          <div class="admin-table__actions">
+            <button type="submit" class="btn btn--primary" id="director-submit">Create Director</button>
+            <button type="button" class="btn btn--ghost" id="director-cancel" style="display:none;">Cancel</button>
+          </div>
+        </form>
+      </article>
+      <div class="admin-table-wrapper admin-management-list">
+        <table class="admin-table">
+          <thead><tr><th>Name</th><th>Biography</th><th>Actions</th></tr></thead>
+          <tbody id="directors-tbody"></tbody>
+        </table>
+      </div>
+      <section class="admin-filmography" id="director-filmography" hidden>
+        <h2 id="director-filmography-title">Director filmography</h2>
+        <ul id="director-filmography-list"></ul>
+      </section>
+    </section>
+
+    <section id="tab-manage-categories" class="admin-tab-content" style="display:none;">
+      <article class="admin-form-card">
+        <h2 id="category-form-title">Create Category</h2>
+        <form id="category-form">
+          <input type="hidden" id="category-id">
+          <p class="form__group">
+            <label class="form__label" for="category-name">Name</label>
+            <input type="text" class="form__input" id="category-name" minlength="2" maxlength="50" required>
+          </p>
+          <p class="form__group">
+            <label class="form__label" for="category-description">Description</label>
+            <textarea class="form__textarea" id="category-description" rows="3" minlength="3" maxlength="500" required></textarea>
+          </p>
+          <div class="admin-table__actions">
+            <button type="submit" class="btn btn--primary" id="category-submit">Create Category</button>
+            <button type="button" class="btn btn--ghost" id="category-cancel" style="display:none;">Cancel</button>
+          </div>
+        </form>
+      </article>
+      <div class="admin-table-wrapper admin-management-list">
+        <table class="admin-table">
+          <thead><tr><th>Name</th><th>Description</th><th>Actions</th></tr></thead>
+          <tbody id="categories-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="tab-manage-users" class="admin-tab-content" style="display:none;">
+      <article class="admin-form-card">
+        <h2 id="user-form-title">Update User</h2>
+        <form id="user-form">
+          <input type="hidden" id="user-id">
+          <p class="form__group">
+            <label class="form__label" for="user-username">Username</label>
+            <input type="text" class="form__input" id="user-username" minlength="3" maxlength="50" required>
+          </p>
+          <p class="form__group">
+            <label class="form__label" for="user-email">Email</label>
+            <input type="email" class="form__input" id="user-email" maxlength="100" required>
+          </p>
+          <p class="form__group">
+            <label class="form__label" for="user-password">New Password</label>
+            <input type="password" class="form__input" id="user-password" minlength="6" placeholder="Leave blank to keep current password">
+          </p>
+          <div class="admin-table__actions">
+            <button type="submit" class="btn btn--primary">Save User</button>
+            <button type="button" class="btn btn--ghost" id="user-cancel">Cancel</button>
+          </div>
+        </form>
+      </article>
+      <div class="admin-table-wrapper admin-management-list">
+        <table class="admin-table">
+          <thead><tr><th>Username</th><th>Email</th><th>Role</th><th>Actions</th></tr></thead>
+          <tbody id="users-tbody"></tbody>
+        </table>
+      </div>
     </section>
   </main>
 
@@ -109,6 +283,31 @@
   </footer>
 
   <div id="toast-container"></div>
+
+  <dialog class="role-confirm-dialog" id="role-confirm-dialog" aria-labelledby="role-confirm-title">
+    <form id="role-confirm-form">
+      <h2 id="role-confirm-title">Confirm role change</h2>
+      <p class="role-confirm-dialog__description">
+        Changing the role for <strong id="role-confirm-user"></strong> requires your administrator password.
+      </p>
+      <input type="hidden" id="role-user-id">
+      <p class="form__group">
+        <label class="form__label" for="role-select">New role</label>
+        <select class="form__select" id="role-select" required>
+          <option value="user">User</option>
+          <option value="admin">Administrator</option>
+        </select>
+      </p>
+      <p class="form__group">
+        <label class="form__label" for="role-admin-password">Administrator password</label>
+        <input type="password" class="form__input" id="role-admin-password" autocomplete="current-password" required>
+      </p>
+      <div class="admin-table__actions">
+        <button type="submit" class="btn btn--primary" id="role-confirm-submit">Confirm role</button>
+        <button type="button" class="btn btn--ghost" id="role-confirm-cancel">Cancel</button>
+      </div>
+    </form>
+  </dialog>
 
   <script type="module">
     import { initAdminPage } from '../assets/js/pages/admin.js';

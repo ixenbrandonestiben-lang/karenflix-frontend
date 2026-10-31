@@ -1,11 +1,14 @@
 // Catalogo de peliculas: Filtros y buscador
 import { getMovies, getCategories } from '../api/movie.api.js';
+import { getFavorites } from '../api/favorite.api.js';
 import { renderNavbar } from '../components/navbar.js';
 import { createMovieCard } from '../components/movieCard.js';
+import { isLoggedIn } from '../utils/authStorage.js';
 
 let searchTimer = null;
 let activeCategory = 'All';
 let allMovies = [];
+let favoritesByMovieId = new Map();
 
 export async function initMoviesPage() {
   renderNavbar('movies');
@@ -63,8 +66,20 @@ async function fetchAndRenderMovies() {
   if (grid) grid.innerHTML = '<div class="page-loading"><div class="spinner"></div></div>';
 
   try {
-    const movies = await getMovies();
+    const [movies, favorites] = await Promise.all([
+      getMovies(),
+      isLoggedIn()
+        ? getFavorites().catch(err => {
+          console.warn('Error al cargar favoritos:', err);
+          return [];
+        })
+        : Promise.resolve([]),
+    ]);
     allMovies = Array.isArray(movies) ? movies.filter(m => m.status === 'approved') : [];
+    favoritesByMovieId = new Map(
+      (Array.isArray(favorites) ? favorites : [])
+        .map(favorite => [String(favorite.movie_id ?? favorite.movie?.id), favorite])
+    );
     renderMovieGrid();
   } catch (err) {
     console.error('Error al cargar peliculas:', err);
@@ -100,7 +115,13 @@ function renderMovieGrid() {
   grid.innerHTML = '';
 
   filtered.forEach(movie => {
-    const card = createMovieCard(movie, { showFavorite: true, showInfo: true });
+    const favoriteId = favoritesByMovieId.get(String(movie.id))?.id ?? null;
+    const card = createMovieCard(movie, {
+      showFavorite: true,
+      favoriteActive: Boolean(favoriteId),
+      favoriteId,
+      showInfo: true,
+    });
     grid.appendChild(card);
   });
 

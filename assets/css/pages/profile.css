@@ -1,0 +1,51 @@
+.profile-page {
+  min-height: 100vh;
+  padding-top: calc(var(--navbar-height) + var(--space-xl));
+  padding-bottom: var(--space-3xl);
+}
+
+.profile-page__title {
+  margin-bottom: var(--space-xl);
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+}
+
+.profile-card,
+.profile-danger-zone {
+  max-width: 700px;
+  padding: var(--space-xl);
+  margin-bottom: var(--space-xl);
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+.profile-card__role {
+  margin-bottom: var(--space-lg);
+  color: var(--color-text-muted);
+  text-transform: capitalize;
+}
+
+.profile-danger-zone {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-lg);
+  border-color: var(--color-danger, var(--color-accent));
+}
+
+.profile-danger-zone h2 {
+  margin-bottom: var(--space-xs);
+  font-size: var(--font-size-lg);
+}
+
+.profile-danger-zone p {
+  color: var(--color-text-muted);
+}
+
+@media (max-width: 575px) {
+  .profile-danger-zone {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

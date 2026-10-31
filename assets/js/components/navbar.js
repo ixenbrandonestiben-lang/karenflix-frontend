@@ -1,5 +1,6 @@
 // Barra de navegacion principal
 import { isLoggedIn, getUser, isAdmin, clearSession } from '../utils/authStorage.js';
+import { logout } from '../api/auth.api.js';
 import { showToast } from '../utils/notify.js';
 import { initTheme, getTheme, toggleTheme } from '../utils/theme.js';
 import { getHomeUrl, getPageUrl } from '../utils/pageRoutes.js';
@@ -38,6 +39,7 @@ export function renderNavbar(activePage) {
             <div class="dropdown__header-email">${user.email || ''}</div>
           </div>
           <div class="dropdown__divider"></div>
+          <a class="dropdown__item" href="${getPageUrl('profile.html')}">My Profile</a>
           <button class="dropdown__item dropdown__item--danger" id="logout-btn">
             <span class="dropdown__item-icon">🚪</span> Sign Out
           </button>
@@ -85,6 +87,7 @@ export function renderNavbar(activePage) {
       <a href="${getHomeUrl()}" class="${mobileLinkClass('home')}">Home</a>
       <a href="${getPageUrl('movies.html')}" class="${mobileLinkClass('movies')}">Movies</a>
       <a href="${getPageUrl('mylist.html')}" class="${mobileLinkClass('mylist')}">My List</a>
+      ${loggedIn ? `<a href="${getPageUrl('profile.html')}" class="${mobileLinkClass('profile')}">My Profile</a>` : ''}
       ${adminLinkMobile}
       <button class="navbar__mobile-link" id="mobile-theme-toggle">
         Cambiar Tema: ${themeIcon}
@@ -175,9 +178,20 @@ function setupLogout() {
   const logoutBtn = document.getElementById('logout-btn');
   const mobileLogoutBtn = document.getElementById('mobile-logout-btn');
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    let logoutError = null;
+    try {
+      await logout();
+    } catch (error) {
+      logoutError = error;
+    }
+
     clearSession();
-    showToast('Sesion cerrada correctamente', 'success');
+    if (logoutError) {
+      showToast(`Sesion cerrada localmente; no se pudo notificar al servidor: ${logoutError.message}`, 'warning');
+    } else {
+      showToast('Sesion cerrada correctamente', 'success');
+    }
     setTimeout(() => {
       window.location.href = getHomeUrl();
     }, 600);

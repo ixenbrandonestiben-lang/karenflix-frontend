@@ -41,6 +41,14 @@ export async function initMyListPage() {
         const card = createMovieCard(movieObj, {
           showFavorite: true,
           favoriteActive: true,
+          favoriteId: fav.id,
+          onUnfavorite: () => {
+            card.remove();
+            if (grid.children.length === 0) {
+              grid.style.display = 'none';
+              if (emptyState) emptyState.style.display = 'flex';
+            }
+          },
         });
         grid.appendChild(card);
       });

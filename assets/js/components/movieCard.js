@@ -1,11 +1,15 @@
 // Componente de tarjeta de pelicula
 import { showToast } from '../utils/notify.js';
 import { getPageUrl } from '../utils/pageRoutes.js';
+import { addFavorite, getFavorites, removeFavorite } from '../api/favorite.api.js';
+import { isLoggedIn } from '../utils/authStorage.js';
 
 export function createMovieCard(movie, options = {}) {
   const {
     showFavorite = false,
     favoriteActive = false,
+    favoriteId = null,
+    onUnfavorite = null,
     showInfo = true,
     linkToDetail = true,
   } = options;
@@ -73,10 +77,45 @@ export function createMovieCard(movie, options = {}) {
 
   const favBtn = card.querySelector('.movie-card__favorite');
   if (favBtn) {
-    favBtn.addEventListener('click', (e) => {
+    let activeFavoriteId = favoriteId;
+
+    favBtn.addEventListener('click', async (e) => {
       e.stopPropagation();
-      const isActive = favBtn.classList.toggle('movie-card__favorite--active');
-      showToast(isActive ? `Agregada a Mi Lista` : `Eliminada de Mi Lista`, 'info');
+      if (!isLoggedIn()) {
+        showToast('Inicia sesion para guardar en tu lista', 'warning');
+        return;
+      }
+
+      favBtn.disabled = true;
+      try {
+        if (!activeFavoriteId) {
+          const favorites = await getFavorites();
+          const existing = Array.isArray(favorites)
+            ? favorites.find(item => item.movie_id == movie.id || item.movie?.id == movie.id)
+            : null;
+          activeFavoriteId = existing?.id ?? null;
+        }
+
+        if (activeFavoriteId) {
+          await removeFavorite(activeFavoriteId);
+          activeFavoriteId = null;
+          favBtn.classList.remove('movie-card__favorite--active');
+          showToast('Eliminada de Mi Lista', 'info');
+          if (favoriteActive) {
+            if (onUnfavorite) onUnfavorite();
+            else card.remove();
+          }
+        } else {
+          const favorite = await addFavorite(movie.id);
+          activeFavoriteId = favorite?.id ?? null;
+          favBtn.classList.add('movie-card__favorite--active');
+          showToast('Agregada a Mi Lista', 'success');
+        }
+      } catch (error) {
+        showToast(error.message || 'Error al actualizar Mi Lista', 'error');
+      } finally {
+        favBtn.disabled = false;
+      }
     });
   }
 
