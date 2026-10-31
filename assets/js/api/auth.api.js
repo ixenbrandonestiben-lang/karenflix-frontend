@@ -13,6 +13,14 @@ export function getProfile() {
   return api.get('/auth/profile');
 }
 
+export function updateProfile(data) {
+  return api.put('/auth/profile', data);
+}
+
+export function deleteProfile() {
+  return api.delete('/auth/profile');
+}
+
 export function logout() {
   return api.post('/auth/logout');
 }
