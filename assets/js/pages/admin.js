@@ -1,6 +1,6 @@
 // Panel de administracion: Aprobacion y registro de contenido
 import {
-  getMovies, approveMovie, deleteMovie, createMovie, getCategories,
+  getMovies, getPendingMovies, approveMovie, deleteMovie, createMovie, getCategories,
   getCategoryById, updateMovie, createCategory, updateCategory, deleteCategory,
 } from '../api/movie.api.js';
 import {
@@ -8,7 +8,10 @@ import {
   getMovieCast, getMovieActors, getActorMovies, getMovieActorById,
   updateActorAssignment, removeActor,
 } from '../api/actor.api.js';
-import { getUsers, updateUser, deleteUser } from '../api/user.api.js';
+import {
+  getDirectors, getDirectorById, createDirector, updateDirector, deleteDirector,
+} from '../api/director.api.js';
+import { getUsers, updateUser, updateUserRole, deleteUser } from '../api/user.api.js';
 import { renderNavbar } from '../components/navbar.js';
 import { getToken, getUser, isAdmin, isLoggedIn, setSession } from '../utils/authStorage.js';
 import { showToast } from '../utils/notify.js';
@@ -17,6 +20,7 @@ import { getPageUrl } from '../utils/pageRoutes.js';
 let allMovies = [];
 let categoriesList = [];
 let actorsList = [];
+let directorsList = [];
 let usersList = [];
 
 export async function initAdminPage() {
@@ -35,8 +39,10 @@ export async function initAdminPage() {
   setupAddMovieForm();
   setupAssignActorForm();
   setupActorForm();
+  setupDirectorForm();
   setupCategoryForm();
   setupUserForm();
+  setupRoleDialog();
 }
 
 async function loadAdminData() {
@@ -44,24 +50,32 @@ async function loadAdminData() {
   if (tbody) tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:var(--space-xl);"><div class="spinner spinner--sm" style="margin:auto;"></div></td></tr>';
 
   try {
-    const [movies, categories, actors, users] = await Promise.all([
-      getMovies(),
+    const [movies, pendingMovies, categories, actors, directors, users] = await Promise.all([
+      getMovies({ limit: 100 }),
+      getPendingMovies({ limit: 100 }),
       getCategories(),
       getActors(),
+      getDirectors(),
       getUsers(),
     ]);
 
-    allMovies = Array.isArray(movies) ? movies : [];
+    allMovies = [
+      ...(Array.isArray(movies) ? movies : []),
+      ...(Array.isArray(pendingMovies) ? pendingMovies : []),
+    ];
     categoriesList = Array.isArray(categories) ? categories : [];
     actorsList = Array.isArray(actors) ? actors : [];
+    directorsList = Array.isArray(directors) ? directors : [];
     usersList = Array.isArray(users) ? users : [];
 
     renderStats();
     renderPendingTable();
     renderMovies();
     populateCategorySelect();
+    populateDirectorSelect();
     populateMovieAndActorSelects();
     renderActors();
+    renderDirectors();
     renderCategories();
     renderUsers();
   } catch (err) {
@@ -101,6 +115,7 @@ function initTabs() {
     'manage-movies': document.getElementById('tab-manage-movies'),
     'assign-actors': document.getElementById('tab-assign-actors'),
     'manage-actors': document.getElementById('tab-manage-actors'),
+    'manage-directors': document.getElementById('tab-manage-directors'),
     'manage-categories': document.getElementById('tab-manage-categories'),
     'manage-users': document.getElementById('tab-manage-users'),
   };
@@ -203,6 +218,16 @@ function populateCategorySelect() {
   if (selected) categorySelect.value = selected;
 }
 
+function populateDirectorSelect() {
+  const directorSelect = document.getElementById('movie-director');
+  if (!directorSelect) return;
+
+  const selected = directorSelect.value;
+  directorSelect.innerHTML = '<option value="">Selecciona director...</option>' +
+    directorsList.map(director => `<option value="${director.id}">${escapeHTML(director.name)}</option>`).join('');
+  if (selected) directorSelect.value = selected;
+}
+
 function populateMovieAndActorSelects() {
   const movieSelect = document.getElementById('assign-movie');
   if (movieSelect) {
@@ -234,10 +259,12 @@ function setupAddMovieForm() {
     const title = document.getElementById('movie-title').value.trim();
     const description = document.getElementById('movie-description').value.trim();
     const categoryId = document.getElementById('movie-category').value;
+    const directorId = document.getElementById('movie-director').value;
     const releaseYear = parseInt(document.getElementById('movie-year').value, 10);
+    const durationMinutes = parseInt(document.getElementById('movie-duration').value, 10);
     const imageUrl = document.getElementById('movie-image').value.trim();
 
-    if (!title || !description || !categoryId || !releaseYear) {
+    if (!title || !description || !categoryId || !directorId || !releaseYear || !durationMinutes || !imageUrl) {
       showToast('Completa todos los campos obligatorios', 'error');
       return;
     }
@@ -246,9 +273,11 @@ function setupAddMovieForm() {
       const movieData = {
         title,
         description,
+        director_id: Number(directorId),
         category_id: Number(categoryId),
         release_year: releaseYear,
-        image_url: imageUrl || null,
+        duration_minutes: durationMinutes,
+        image_url: imageUrl,
       };
       if (movieId) {
         await updateMovie(movieId, movieData);
@@ -269,12 +298,13 @@ function renderMovies() {
   const tbody = document.getElementById('movies-tbody');
   if (!tbody) return;
   if (!allMovies.length) {
-    tbody.innerHTML = '<tr><td colspan="5">No hay peliculas registradas.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6">No hay peliculas registradas.</td></tr>';
     return;
   }
   tbody.innerHTML = allMovies.map(movie => `
     <tr>
       <td>${escapeHTML(movie.title)}</td>
+      <td>${escapeHTML(movie.director?.name || movie.director || '—')}</td>
       <td>${escapeHTML(movie.category || '—')}</td>
       <td>${escapeHTML(movie.releaseYear || movie.release_year || '—')}</td>
       <td>${escapeHTML(movie.status || '—')}</td>
@@ -294,7 +324,9 @@ function renderMovies() {
       document.getElementById('movie-title').value = movie.title || '';
       document.getElementById('movie-description').value = movie.description || '';
       document.getElementById('movie-category').value = category?.id || '';
+      document.getElementById('movie-director').value = movie.director?.id || '';
       document.getElementById('movie-year').value = movie.releaseYear || movie.release_year || '';
+      document.getElementById('movie-duration').value = movie.durationMinutes || movie.duration_minutes || '';
       document.getElementById('movie-image').value = movie.imageUrl || movie.image_url || '';
       document.getElementById('movie-form-title').textContent = 'Edit Movie';
       document.getElementById('movie-submit').textContent = 'Save Movie';
@@ -561,6 +593,114 @@ function resetActorForm() {
   document.getElementById('actor-cancel').style.display = 'none';
 }
 
+function setupDirectorForm() {
+  const form = document.getElementById('director-form');
+  if (!form) return;
+  document.getElementById('director-cancel').addEventListener('click', resetDirectorForm);
+
+  form.addEventListener('submit', async event => {
+    event.preventDefault();
+    const id = document.getElementById('director-id').value;
+    const data = {
+      name: document.getElementById('director-name').value.trim(),
+      biography: document.getElementById('director-biography').value.trim() || null,
+      photo_url: document.getElementById('director-photo-url').value.trim() || null,
+    };
+
+    try {
+      if (id) {
+        await updateDirector(id, data);
+        showToast('Director actualizado', 'success');
+      } else {
+        await createDirector(data);
+        showToast('Director creado', 'success');
+      }
+      resetDirectorForm();
+      await loadAdminData();
+    } catch (error) {
+      showToast(error.message || 'No se pudo guardar el director', 'error');
+    }
+  });
+}
+
+function renderDirectors() {
+  const tbody = document.getElementById('directors-tbody');
+  if (!tbody) return;
+  if (!directorsList.length) {
+    tbody.innerHTML = '<tr><td colspan="3">No hay directores registrados.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = directorsList.map(director => `
+    <tr>
+      <td>${escapeHTML(director.name)}</td>
+      <td>${escapeHTML(director.biography || '—')}</td>
+      <td><div class="admin-table__actions">
+        <button class="btn btn--sm btn--ghost" data-director-movies="${director.id}">Movies</button>
+        <button class="btn btn--sm btn--ghost" data-director-edit="${director.id}">Edit</button>
+        <button class="btn btn--sm btn--danger" data-director-delete="${director.id}">Delete</button>
+      </div></td>
+    </tr>
+  `).join('');
+
+  tbody.querySelectorAll('[data-director-movies]').forEach(button => {
+    button.addEventListener('click', async () => {
+      try {
+        const director = await getDirectorById(button.dataset.directorMovies, { includeMovies: true });
+        document.getElementById('director-filmography-title').textContent =
+          `${director.name} filmography`;
+        const list = document.getElementById('director-filmography-list');
+        list.innerHTML = director.movies?.length
+          ? director.movies.map(movie => `<li>${escapeHTML(movie.title)} (${escapeHTML(movie.release_year)}) · ${escapeHTML(movie.status)}</li>`).join('')
+          : '<li>No movie assignments found.</li>';
+        document.getElementById('director-filmography').hidden = false;
+        document.getElementById('director-filmography').scrollIntoView({ behavior: 'smooth' });
+      } catch (error) {
+        showToast(error.message || 'No se pudo cargar la filmografia', 'error');
+      }
+    });
+  });
+
+  tbody.querySelectorAll('[data-director-edit]').forEach(button => {
+    button.addEventListener('click', async () => {
+      try {
+        const director = await getDirectorById(button.dataset.directorEdit);
+        document.getElementById('director-id').value = director.id;
+        document.getElementById('director-name').value = director.name || '';
+        document.getElementById('director-biography').value = director.biography || '';
+        document.getElementById('director-photo-url').value = director.photo_url || '';
+        document.getElementById('director-form-title').textContent = 'Edit Director';
+        document.getElementById('director-submit').textContent = 'Save Director';
+        document.getElementById('director-cancel').style.display = '';
+        document.getElementById('director-form').scrollIntoView({ behavior: 'smooth' });
+      } catch (error) {
+        showToast(error.message || 'No se pudo cargar el director', 'error');
+      }
+    });
+  });
+
+  tbody.querySelectorAll('[data-director-delete]').forEach(button => {
+    button.addEventListener('click', async () => {
+      if (!confirm('Delete this director? Directors with assigned movies cannot be deleted.')) return;
+      try {
+        await deleteDirector(button.dataset.directorDelete);
+        showToast('Director eliminado', 'success');
+        await loadAdminData();
+      } catch (error) {
+        showToast(error.message || 'No se pudo eliminar el director', 'error');
+      }
+    });
+  });
+}
+
+function resetDirectorForm() {
+  document.getElementById('director-form').reset();
+  document.getElementById('director-id').value = '';
+  document.getElementById('director-form-title').textContent = 'Create Director';
+  document.getElementById('director-submit').textContent = 'Create Director';
+  document.getElementById('director-cancel').style.display = 'none';
+}
+
 function setupCategoryForm() {
   const form = document.getElementById('category-form');
   if (!form) return;
@@ -672,6 +812,40 @@ function setupUserForm() {
   });
 }
 
+function setupRoleDialog() {
+  const dialog = document.getElementById('role-confirm-dialog');
+  const form = document.getElementById('role-confirm-form');
+  if (!dialog || !form) return;
+
+  document.getElementById('role-confirm-cancel').addEventListener('click', () => dialog.close());
+  dialog.addEventListener('close', () => {
+    form.reset();
+    document.getElementById('role-user-id').value = '';
+  });
+
+  form.addEventListener('submit', async event => {
+    event.preventDefault();
+    const userId = document.getElementById('role-user-id').value;
+    const submitButton = document.getElementById('role-confirm-submit');
+    submitButton.disabled = true;
+
+    try {
+      await updateUserRole(userId, {
+        role: document.getElementById('role-select').value,
+        admin_password: document.getElementById('role-admin-password').value,
+      });
+      dialog.close();
+      showToast('Rol actualizado', 'success');
+      await loadAdminData();
+    } catch (error) {
+      showToast(error.message || 'No se pudo actualizar el rol', 'error');
+    } finally {
+      document.getElementById('role-admin-password').value = '';
+      submitButton.disabled = false;
+    }
+  });
+}
+
 function renderUsers() {
   const tbody = document.getElementById('users-tbody');
   if (!tbody) return;
@@ -686,7 +860,7 @@ function renderUsers() {
       <td>${escapeHTML(user.role)}</td>
       <td><div class="admin-table__actions">
         <button class="btn btn--sm btn--ghost" data-user-edit="${user.id}">Edit</button>
-        ${String(getUser()?.id) === String(user.id) ? '' : `<button class="btn btn--sm btn--danger" data-user-delete="${user.id}">Delete</button>`}
+        ${String(getUser()?.id) === String(user.id) ? '' : `<button class="btn btn--sm btn--ghost" data-user-role="${user.id}">Change role</button><button class="btn btn--sm btn--danger" data-user-delete="${user.id}">Delete</button>`}
       </div></td>
     </tr>
   `).join('');
@@ -700,6 +874,17 @@ function renderUsers() {
       document.getElementById('user-password').value = '';
       document.getElementById('user-form-title').textContent = `Edit ${user.username}`;
       document.getElementById('user-form').scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+  tbody.querySelectorAll('[data-user-role]').forEach(button => {
+    button.addEventListener('click', () => {
+      const user = usersList.find(item => String(item.id) === button.dataset.userRole);
+      if (!user) return;
+      document.getElementById('role-user-id').value = user.id;
+      document.getElementById('role-confirm-user').textContent = user.username;
+      document.getElementById('role-select').value = user.role;
+      document.getElementById('role-admin-password').value = '';
+      document.getElementById('role-confirm-dialog').showModal();
     });
   });
   tbody.querySelectorAll('[data-user-delete]').forEach(button => {

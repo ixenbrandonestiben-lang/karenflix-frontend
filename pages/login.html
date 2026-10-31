@@ -22,12 +22,12 @@
       <h1>Sign In</h1>
       <form id="login-form" novalidate>
         <p class="form__group">
-          <input type="text" class="form__input" id="login-email" placeholder=" " required>
+          <input type="text" class="form__input" id="login-email" placeholder=" " autocomplete="username" autocapitalize="none" spellcheck="false" required>
           <label class="form__label form__label--float" for="login-email">Email or Username</label>
           <span class="form__error" id="login-email-error"></span>
         </p>
         <p class="form__group">
-          <input type="password" class="form__input" id="login-password" placeholder=" " required>
+          <input type="password" class="form__input" id="login-password" placeholder=" " autocomplete="current-password" required>
           <label class="form__label form__label--float" for="login-password">Password</label>
           <span class="form__error" id="login-password-error"></span>
         </p>
