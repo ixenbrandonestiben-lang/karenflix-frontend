@@ -1,0 +1,218 @@
+/* ==========================================================================
+   KarenFlix — Admin Page Styles
+   Page: admin.html
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Admin Page Layout
+   -------------------------------------------------------------------------- */
+.admin-page {
+  padding-top: calc(var(--navbar-height) + var(--space-xl));
+  min-height: 100vh;
+  padding-bottom: var(--space-3xl);
+}
+
+.admin-page__title {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  margin-bottom: var(--space-xl);
+}
+
+/* --------------------------------------------------------------------------
+   Admin Stats Row
+   -------------------------------------------------------------------------- */
+.admin-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-md);
+  margin-bottom: var(--space-xl);
+}
+
+.admin-stat-card {
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  text-align: center;
+  transition: border-color var(--transition-fast);
+}
+
+.admin-stat-card:hover {
+  border-color: var(--color-border-hover);
+}
+
+.admin-stat-card__value {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-extrabold);
+  color: var(--color-accent);
+  line-height: 1;
+  margin-bottom: var(--space-2xs);
+}
+
+.admin-stat-card__label {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+}
+
+/* --------------------------------------------------------------------------
+   Admin Tabs
+   -------------------------------------------------------------------------- */
+.admin-tabs {
+  display: flex;
+  gap: var(--space-2xs);
+  margin-bottom: var(--space-xl);
+  border-bottom: 1px solid var(--color-border);
+  overflow-x: auto;
+}
+
+.admin-tabs__btn {
+  padding: var(--space-sm) var(--space-lg);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-muted);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+}
+
+.admin-tabs__btn:hover {
+  color: var(--color-text-primary);
+}
+
+.admin-tabs__btn--active {
+  color: var(--color-text-primary);
+  border-bottom-color: var(--color-accent);
+}
+
+/* --------------------------------------------------------------------------
+   Admin Form Card
+   -------------------------------------------------------------------------- */
+.admin-form-card {
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  max-width: 700px;
+}
+
+.admin-form-card__title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  margin-bottom: var(--space-lg);
+}
+
+.form__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+}
+
+@media (max-width: 575px) {
+  .form__row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Admin Table Overrides
+   -------------------------------------------------------------------------- */
+.admin-table thead {
+  background-color: var(--color-bg-secondary);
+}
+
+.admin-table th {
+  padding: var(--space-sm) var(--space-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+  font-size: var(--font-size-xs);
+  text-align: left;
+}
+
+.admin-table td {
+  padding: var(--space-sm) var(--space-md);
+  color: var(--color-text-secondary);
+  vertical-align: middle;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.admin-table tr:hover td {
+  background-color: var(--color-bg-hover);
+}
+
+.admin-table__img {
+  width: 40px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  background-color: var(--color-bg-hover);
+}
+
+.admin-table__actions {
+  display: flex;
+  gap: var(--space-xs);
+  align-items: center;
+}
+
+.admin-management-list {
+  margin-top: var(--space-xl);
+}
+
+.admin-form-card .admin-table__actions {
+  margin-top: var(--space-md);
+}
+
+.admin-filmography {
+  margin-top: var(--space-xl);
+  padding: var(--space-lg);
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+.admin-filmography h2 {
+  margin-bottom: var(--space-md);
+  font-size: var(--font-size-lg);
+}
+
+.admin-filmography ul {
+  display: grid;
+  gap: var(--space-xs);
+  padding-left: var(--space-lg);
+  color: var(--color-text-secondary);
+}
+
+.role-confirm-dialog {
+  width: min(440px, calc(100vw - 32px));
+  max-width: 440px;
+  padding: var(--space-xl);
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.role-confirm-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(3px);
+}
+
+.role-confirm-dialog h2 {
+  margin-bottom: var(--space-sm);
+  font-size: var(--font-size-lg);
+}
+
+.role-confirm-dialog__description {
+  margin-bottom: var(--space-lg);
+  color: var(--color-text-secondary);
+}
+
+.role-confirm-dialog .admin-table__actions {
+  margin-top: var(--space-lg);
+}

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KarenFlix - My Profile</title>
+  <link rel="icon" href="../public/favicon.ico">
+  <link rel="stylesheet" href="../assets/css/variables.css">
+  <link rel="stylesheet" href="../assets/css/global.css">
+  <link rel="stylesheet" href="../assets/css/components.css">
+  <link rel="stylesheet" href="../assets/css/pages/profile.css">
+</head>
+<body>
+  <header id="navbar"></header>
+
+  <main class="container profile-page">
+    <h1 class="profile-page__title">My Profile</h1>
+    <article class="profile-card">
+      <p class="profile-card__role" id="profile-role"></p>
+      <form id="profile-form">
+        <p class="form__group">
+          <label class="form__label" for="profile-username">Username</label>
+          <input type="text" class="form__input" id="profile-username" minlength="3" maxlength="50" required>
+        </p>
+        <p class="form__group">
+          <label class="form__label" for="profile-email">Email</label>
+          <input type="email" class="form__input" id="profile-email" maxlength="100" required>
+        </p>
+        <p class="form__group">
+          <label class="form__label" for="profile-password">New Password</label>
+          <input type="password" class="form__input" id="profile-password" minlength="6" placeholder="Leave blank to keep current password">
+        </p>
+        <button type="submit" class="btn btn--primary">Save Changes</button>
+      </form>
+    </article>
+
+    <article class="profile-danger-zone">
+      <div>
+        <h2>Delete Account</h2>
+        <p>This permanently deletes your account and cannot be undone.</p>
+      </div>
+      <button class="btn btn--danger" id="delete-account-btn">Delete Account</button>
+    </article>
+  </main>
+
+  <footer>
+    <div class="container"><p>© 2024 KarenFlix. All rights reserved.</p></div>
+  </footer>
+  <div id="toast-container"></div>
+
+  <script type="module">
+    import { initProfilePage } from '../assets/js/pages/profile.js';
+    initProfilePage();
+  </script>
+</body>
+</html>

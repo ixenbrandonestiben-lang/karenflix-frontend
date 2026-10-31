@@ -1,0 +1,108 @@
+/* ==========================================================================
+   KarenFlix — Auth Page Styles
+   Pages: login.html, register.html
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Auth Page Layout
+   -------------------------------------------------------------------------- */
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.auth-page__bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(135deg, #05070a 0%, #16090d 50%, #05070a 100%);
+}
+
+.auth-page__bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at 30% 20%,
+    rgba(229, 9, 20, 0.15) 0%,
+    rgba(178, 7, 16, 0.08) 50%,
+    transparent 70%
+  );
+}
+
+/* --------------------------------------------------------------------------
+   Auth Navigation
+   -------------------------------------------------------------------------- */
+.auth-nav {
+  padding: var(--space-lg) var(--container-padding);
+}
+
+.auth-nav__logo {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-extrabold);
+  background: var(--color-accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 10px rgba(229, 9, 20, 0.4));
+  letter-spacing: var(--letter-spacing-wide);
+}
+
+.logo__accent {
+  color: inherit;
+}
+
+/* --------------------------------------------------------------------------
+   Auth Container
+   -------------------------------------------------------------------------- */
+.auth-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-xl);
+}
+
+/* --------------------------------------------------------------------------
+   Auth Card Links
+   -------------------------------------------------------------------------- */
+.auth-card__link {
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-medium);
+  transition: color var(--transition-fast);
+}
+
+.auth-card__link:hover {
+  color: var(--color-accent);
+}
+
+/* --------------------------------------------------------------------------
+   Floating Label Animations
+   -------------------------------------------------------------------------- */
+.form__label--float {
+  position: absolute;
+  top: 50%;
+  left: var(--space-md);
+  transform: translateY(-50%);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-base);
+  transition: all var(--transition-fast);
+  pointer-events: none;
+}
+
+.form__group {
+  position: relative;
+}
+
+.form__input:not(:placeholder-shown) + .form__label--float,
+.form__input:focus + .form__label--float {
+  top: 6px;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  transform: translateY(0);
+}
+
+.auth-form .form__input {
+  padding-top: var(--space-lg);
+  padding-bottom: var(--space-xs);
+}

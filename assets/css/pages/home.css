@@ -1,0 +1,83 @@
+/* ==========================================================================
+   KarenFlix — Home / Movies / My List Page Styles
+   Pages: index.html, movies.html, mylist.html
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Carousels Container (Home Page)
+   -------------------------------------------------------------------------- */
+.carousels-container {
+  padding-top: var(--space-md);
+  padding-bottom: var(--space-3xl);
+}
+
+/* --------------------------------------------------------------------------
+   Movies Page
+   -------------------------------------------------------------------------- */
+.movies-page {
+  padding-top: calc(var(--navbar-height) + var(--space-xl));
+  min-height: 100vh;
+}
+
+.movies-page__title {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  margin-bottom: var(--space-md);
+}
+
+/* --------------------------------------------------------------------------
+   My List Page
+   -------------------------------------------------------------------------- */
+.mylist-page {
+  padding-top: calc(var(--navbar-height) + var(--space-xl));
+  min-height: 100vh;
+}
+
+.mylist-page__title {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  margin-bottom: var(--space-md);
+}
+
+/* --------------------------------------------------------------------------
+   Filter Bar — Categories (Horizontal Scrollable Chips)
+   -------------------------------------------------------------------------- */
+.filter-bar__categories {
+  display: flex;
+  gap: var(--space-xs);
+  flex-wrap: wrap;
+}
+
+/* --------------------------------------------------------------------------
+   Filter Bar — Search Input
+   -------------------------------------------------------------------------- */
+.filter-bar__input {
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+  padding: var(--space-xs) var(--space-md);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-sm);
+  width: 220px;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.filter-bar__input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.filter-bar__input:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px var(--color-accent-muted);
+}
+
+/* --------------------------------------------------------------------------
+   Page Loading Overlay
+   -------------------------------------------------------------------------- */
+.page-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--space-4xl);
+}
