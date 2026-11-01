@@ -17,6 +17,7 @@ export async function initMoviesPage() {
   applyURLParams();
   await fetchAndRenderMovies();
   bindSearch();
+  bindSort();
 }
 
 async function populateFilterButtons() {
@@ -67,7 +68,10 @@ async function fetchAndRenderMovies() {
 
   try {
     const [movies, favorites] = await Promise.all([
-      getMovies(),
+      getMovies({
+        sort: document.getElementById('filter-sort')?.value || 'ranking',
+        limit: 100,
+      }),
       isLoggedIn()
         ? getFavorites().catch(err => {
           console.warn('Error al cargar favoritos:', err);
@@ -140,6 +144,12 @@ function bindSearch() {
       renderMovieGrid();
     }, 300);
   });
+}
+
+function bindSort() {
+  const sortSelect = document.getElementById('filter-sort');
+  if (!sortSelect) return;
+  sortSelect.addEventListener('change', fetchAndRenderMovies);
 }
 
 function applyURLParams() {

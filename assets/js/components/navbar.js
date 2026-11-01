@@ -15,7 +15,8 @@ export function renderNavbar(activePage) {
   const user = loggedIn ? getUser() : null;
   const admin = isAdmin();
   const currentTheme = getTheme();
-  const themeIcon = currentTheme === 'light' ? '☀️' : '🌙';
+  const themeIcon = getThemeIcon(currentTheme);
+  const themeName = getThemeName(currentTheme);
 
   const linkClass = (page) =>
     `navbar__link${activePage === page ? ' navbar__link--active' : ''}`;
@@ -71,7 +72,7 @@ export function renderNavbar(activePage) {
           <input type="text" class="navbar__search-input" id="navbar-search-input" placeholder="Search titles...">
         </div>
         <div class="navbar__actions">
-          <button class="theme-toggle" id="theme-toggle" title="Cambiar tema" aria-label="Toggle theme">
+          <button class="theme-toggle" id="theme-toggle" title="Tema actual: ${themeName}. Cambiar tema" aria-label="Tema actual: ${themeName}. Cambiar tema">
             ${themeIcon}
           </button>
           ${actionsHTML}
@@ -90,7 +91,7 @@ export function renderNavbar(activePage) {
       ${loggedIn ? `<a href="${getPageUrl('profile.html')}" class="${mobileLinkClass('profile')}">My Profile</a>` : ''}
       ${adminLinkMobile}
       <button class="navbar__mobile-link" id="mobile-theme-toggle">
-        Cambiar Tema: ${themeIcon}
+        Tema: ${themeName} ${themeIcon} · Cambiar
       </button>
       ${loggedIn
         ? `<button class="navbar__mobile-link navbar__mobile-link--danger" id="mobile-logout-btn">Sign Out</button>`
@@ -213,22 +214,34 @@ function setupHamburger() {
   });
 }
 
-// Alternar entre modo dia y noche
+// Cycle between night, day, and Matrix themes.
 function setupThemeToggle() {
   const toggleBtn = document.getElementById('theme-toggle');
   const mobileToggleBtn = document.getElementById('mobile-theme-toggle');
 
   const handleToggle = () => {
     const newTheme = toggleTheme();
-    const isLight = newTheme === 'light';
-    const icon = isLight ? '☀️' : '🌙';
+    const icon = getThemeIcon(newTheme);
+    const themeName = getThemeName(newTheme);
 
-    if (toggleBtn) toggleBtn.textContent = icon;
-    if (mobileToggleBtn) mobileToggleBtn.textContent = `Cambiar Tema: ${icon}`;
+    if (toggleBtn) {
+      toggleBtn.textContent = icon;
+      toggleBtn.title = `Tema actual: ${themeName}. Cambiar tema`;
+      toggleBtn.setAttribute('aria-label', `Tema actual: ${themeName}. Cambiar tema`);
+    }
+    if (mobileToggleBtn) mobileToggleBtn.textContent = `Tema: ${themeName} ${icon} · Cambiar`;
 
-    showToast(isLight ? 'Modo Dia activado ☀️' : 'Modo Noche activado 🌙', 'info', 1800);
+    showToast(`Tema ${themeName} activado ${icon}`, 'info', 1800);
   };
 
   if (toggleBtn) toggleBtn.addEventListener('click', handleToggle);
   if (mobileToggleBtn) mobileToggleBtn.addEventListener('click', handleToggle);
+}
+
+function getThemeIcon(theme) {
+  return { dark: '🌙', light: '☀️', matrix: '🟢' }[theme] || '🌙';
+}
+
+function getThemeName(theme) {
+  return { dark: 'Noche', light: 'Día', matrix: 'Matrix' }[theme] || 'Noche';
 }

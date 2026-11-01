@@ -189,8 +189,13 @@
 }
 
 .role-confirm-dialog {
+  position: fixed;
+  inset: 0;
+  margin: auto;
   width: min(440px, calc(100vw - 32px));
   max-width: 440px;
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
   padding: var(--space-xl);
   color: var(--color-text-primary);
   background-color: var(--color-bg-card);

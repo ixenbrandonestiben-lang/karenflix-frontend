@@ -42,7 +42,7 @@
         <form id="review-form">
           <p class="form__group">
             <label class="form__label" for="review-title-input">Title</label>
-            <input type="text" class="form__input" id="review-title-input" placeholder="Review title..." required>
+            <input type="text" class="form__input" id="review-title-input" placeholder="Review title..." minlength="3" maxlength="100" required>
           </p>
           <div class="form__group">
             <span class="form__label">Your Rating</span>
@@ -51,9 +51,10 @@
           </div>
           <p class="form__group">
             <label class="form__label" for="review-comment">Your Review</label>
-            <textarea class="form__textarea" id="review-comment" rows="4" placeholder="Share your opinion..." required></textarea>
+            <textarea class="form__textarea" id="review-comment" rows="4" placeholder="Share your opinion..." minlength="10" maxlength="1000" required></textarea>
           </p>
-          <button type="submit" class="btn btn--primary">Submit Review</button>
+          <button type="submit" class="btn btn--primary">Publicar reseña</button>
+          <button type="button" class="btn btn--ghost" id="review-cancel-edit" hidden>Cancelar edición</button>
         </form>
       </article>
 
@@ -66,6 +67,22 @@
       <p>© 2024 KarenFlix. All rights reserved.</p>
     </div>
   </footer>
+
+  <dialog class="trailer-dialog" id="trailer-dialog" aria-label="Tráiler de la película">
+    <div class="trailer-dialog__content">
+      <button class="trailer-dialog__close" id="trailer-close" type="button" aria-label="Cerrar tráiler">×</button>
+      <div class="trailer-dialog__video">
+        <iframe
+          id="trailer-frame"
+          title="Tráiler de la película"
+          src="about:blank"
+          allow="autoplay; encrypted-media; picture-in-picture; web-share"
+          referrerpolicy="strict-origin-when-cross-origin"
+          allowfullscreen>
+        </iframe>
+      </div>
+    </div>
+  </dialog>
 
   <div id="toast-container"></div>
 

@@ -16,6 +16,7 @@ import { renderNavbar } from '../components/navbar.js';
 import { getToken, getUser, isAdmin, isLoggedIn, setSession } from '../utils/authStorage.js';
 import { showToast } from '../utils/notify.js';
 import { getPageUrl } from '../utils/pageRoutes.js';
+import { normalizeYouTubeUrl } from '../utils/youtube.js';
 
 let allMovies = [];
 let categoriesList = [];
@@ -263,9 +264,15 @@ function setupAddMovieForm() {
     const releaseYear = parseInt(document.getElementById('movie-year').value, 10);
     const durationMinutes = parseInt(document.getElementById('movie-duration').value, 10);
     const imageUrl = document.getElementById('movie-image').value.trim();
+    const trailerUrl = document.getElementById('movie-trailer').value.trim();
 
-    if (!title || !description || !categoryId || !directorId || !releaseYear || !durationMinutes || !imageUrl) {
+    if (!title || !description || !categoryId || !directorId || !releaseYear || !durationMinutes) {
       showToast('Completa todos los campos obligatorios', 'error');
+      return;
+    }
+
+    if (trailerUrl && !normalizeYouTubeUrl(trailerUrl)) {
+      showToast('Ingresa una URL válida de YouTube para el tráiler', 'error');
       return;
     }
 
@@ -277,7 +284,8 @@ function setupAddMovieForm() {
         category_id: Number(categoryId),
         release_year: releaseYear,
         duration_minutes: durationMinutes,
-        image_url: imageUrl,
+        image_url: imageUrl || null,
+        trailer_url: trailerUrl || null,
       };
       if (movieId) {
         await updateMovie(movieId, movieData);
@@ -328,6 +336,7 @@ function renderMovies() {
       document.getElementById('movie-year').value = movie.releaseYear || movie.release_year || '';
       document.getElementById('movie-duration').value = movie.durationMinutes || movie.duration_minutes || '';
       document.getElementById('movie-image').value = movie.imageUrl || movie.image_url || '';
+      document.getElementById('movie-trailer').value = movie.trailerUrl || movie.trailer_url || '';
       document.getElementById('movie-form-title').textContent = 'Edit Movie';
       document.getElementById('movie-submit').textContent = 'Save Movie';
       document.getElementById('movie-cancel').style.display = '';
@@ -603,8 +612,6 @@ function setupDirectorForm() {
     const id = document.getElementById('director-id').value;
     const data = {
       name: document.getElementById('director-name').value.trim(),
-      biography: document.getElementById('director-biography').value.trim() || null,
-      photo_url: document.getElementById('director-photo-url').value.trim() || null,
     };
 
     try {
@@ -627,14 +634,13 @@ function renderDirectors() {
   const tbody = document.getElementById('directors-tbody');
   if (!tbody) return;
   if (!directorsList.length) {
-    tbody.innerHTML = '<tr><td colspan="3">No hay directores registrados.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="2">No hay directores registrados.</td></tr>';
     return;
   }
 
   tbody.innerHTML = directorsList.map(director => `
     <tr>
       <td>${escapeHTML(director.name)}</td>
-      <td>${escapeHTML(director.biography || '—')}</td>
       <td><div class="admin-table__actions">
         <button class="btn btn--sm btn--ghost" data-director-movies="${director.id}">Movies</button>
         <button class="btn btn--sm btn--ghost" data-director-edit="${director.id}">Edit</button>
@@ -667,8 +673,6 @@ function renderDirectors() {
         const director = await getDirectorById(button.dataset.directorEdit);
         document.getElementById('director-id').value = director.id;
         document.getElementById('director-name').value = director.name || '';
-        document.getElementById('director-biography').value = director.biography || '';
-        document.getElementById('director-photo-url').value = director.photo_url || '';
         document.getElementById('director-form-title').textContent = 'Edit Director';
         document.getElementById('director-submit').textContent = 'Save Director';
         document.getElementById('director-cancel').style.display = '';

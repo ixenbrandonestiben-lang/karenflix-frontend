@@ -17,7 +17,7 @@ export async function initHomePage() {
 
   try {
     const [movies, favorites] = await Promise.all([
-      getMovies(),
+      getMovies({ sort: 'ranking', limit: 100 }),
       isLoggedIn()
         ? getFavorites().catch(error => {
           console.warn('Error al cargar favoritos:', error);
@@ -58,7 +58,7 @@ export async function initHomePage() {
         <div class="empty-state">
           <p class="empty-state__icon">⚠️</p>
           <h3>Backend Desconectado</h3>
-          <p>Asegurate de que el backend este corriendo en http://localhost:4000/api/v1</p>
+          <p>No se pudo conectar con el backend de producción. Intenta de nuevo más tarde.</p>
         </div>
       `;
     }
@@ -192,7 +192,7 @@ function renderCarousels(approvedMovies, favoritesByMovieId) {
   if (!container) return;
 
   const trending = [...approvedMovies]
-    .sort((a, b) => (b.averageRating || 0) - (a.averageRating || 0))
+    .sort((a, b) => (b.rankingScore ?? b.averageRating ?? 0) - (a.rankingScore ?? a.averageRating ?? 0))
     .slice(0, 8);
 
   container.appendChild(
