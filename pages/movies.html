@@ -18,6 +18,12 @@
 
     <nav aria-label="Filtros y búsqueda" class="filter-bar">
       <div id="filter-categories"></div>
+      <label class="filter-bar__sort-label" for="filter-sort">Ordenar:</label>
+      <select class="filter-bar__sort" id="filter-sort" aria-label="Ordenar películas">
+        <option value="ranking">Mejor rankeadas</option>
+        <option value="popular">Más populares</option>
+        <option value="recent">Más recientes</option>
+      </select>
       <search>
         <input type="search" class="filter-bar__input" id="filter-search" placeholder="Search movies...">
       </search>
