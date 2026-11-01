@@ -58,7 +58,7 @@ export async function initHomePage() {
         <div class="empty-state">
           <p class="empty-state__icon">⚠️</p>
           <h3>Backend Desconectado</h3>
-          <p>Asegurate de que el backend este corriendo en http://localhost:4000/api/v1</p>
+          <p>No se pudo conectar con el backend de producción. Intenta de nuevo más tarde.</p>
         </div>
       `;
     }
