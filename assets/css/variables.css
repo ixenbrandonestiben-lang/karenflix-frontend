@@ -1,7 +1,7 @@
 /* ==========================================================================
    KarenFlix — Design Tokens & CSS Custom Properties
    Theme: Deep Black Base with Streaming Red & Ruby
-   Supports Day/Night mode via [data-theme="light"]
+   Supports Night, Day, and Matrix modes via [data-theme]
    ========================================================================== */
 
 :root {
@@ -200,4 +200,48 @@
   --shadow-card-hover: 0 12px 30px rgba(193, 18, 31, 0.15), 0 0 0 1px rgba(143, 7, 18, 0.3);
   --shadow-glow-accent: 0 0 20px rgba(193, 18, 31, 0.25);
   --shadow-glow-ruby: 0 0 20px rgba(143, 7, 18, 0.25);
+}
+
+/* ==========================================================================
+   Matrix Mode
+   ========================================================================== */
+
+[data-theme="matrix"] {
+  --color-bg-primary: #020805;
+  --color-bg-secondary: #06120a;
+  --color-bg-card: #091a0e;
+  --color-bg-hover: #102b18;
+  --color-surface: #07140b;
+
+  --color-red: #00c83a;
+  --color-red-bright: #39ff14;
+  --color-ruby: #008f11;
+  --color-ruby-bright: #00d941;
+
+  --color-accent: #00e640;
+  --color-accent-hover: #39ff14;
+  --color-accent-active: #00a82e;
+  --color-accent-muted: rgba(0, 230, 64, 0.16);
+  --color-ruby-muted: rgba(0, 143, 17, 0.18);
+  --color-accent-gradient: linear-gradient(135deg, #39ff14 0%, #008f11 100%);
+  --color-ruby-gradient: linear-gradient(135deg, #008f11 0%, #00e640 100%);
+
+  --color-text-primary: #e2ffe9;
+  --color-text-secondary: #9ac9a5;
+  --color-text-muted: #5e8a68;
+  --color-text-inverse: #020805;
+
+  --color-overlay: rgba(2, 8, 5, 0.78);
+  --color-overlay-heavy: rgba(2, 8, 5, 0.92);
+  --color-glass: rgba(6, 18, 10, 0.9);
+  --color-glass-light: rgba(9, 26, 14, 0.8);
+
+  --color-border: rgba(0, 230, 64, 0.2);
+  --color-border-hover: rgba(57, 255, 20, 0.45);
+  --color-border-focus: #39ff14;
+  --color-border-input: rgba(0, 230, 64, 0.3);
+
+  --shadow-card-hover: 0 8px 30px rgba(0, 0, 0, 0.8), 0 0 15px rgba(0, 230, 64, 0.25), 0 0 0 1px rgba(0, 143, 17, 0.3);
+  --shadow-glow-accent: 0 0 20px rgba(0, 230, 64, 0.45);
+  --shadow-glow-ruby: 0 0 20px rgba(0, 143, 17, 0.45);
 }
