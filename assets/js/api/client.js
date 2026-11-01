@@ -19,8 +19,21 @@ async function request(endpoint, options = {}) {
   });
 
   if (!res.ok) {
-    const error = await res.json().catch(() => ({ message: res.statusText }));
-    throw new Error(error.message || `HTTP ${res.status}`);
+    const responseBody = await res.json().catch(() => null);
+    const payload = responseBody && typeof responseBody === 'object' ? responseBody : {};
+    const details = payload.errors ?? payload.errores;
+    const detailMessages = Array.isArray(details)
+      ? [...new Set(details.map(detail => detail?.msg).filter(Boolean))]
+      : [];
+    const message = payload.message || payload.mensaje || `HTTP ${res.status}`;
+    const error = new Error(
+      detailMessages.length > 0
+        ? `${message} ${detailMessages.join(' ')}`
+        : message
+    );
+    error.statusCode = res.status;
+    error.details = details || null;
+    throw error;
   }
 
   // Handle 204 No Content

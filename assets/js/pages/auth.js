@@ -4,6 +4,7 @@ import { setSession } from '../utils/authStorage.js';
 import { showToast } from '../utils/notify.js';
 import { validateEmail, validatePassword, validateRequired } from '../utils/validators.js';
 import { getHomeUrl, getPageUrl } from '../utils/pageRoutes.js';
+import { initTheme } from '../utils/theme.js';
 
 function setFieldError(inputEl, errorEl, message) {
   if (inputEl) inputEl.classList.add('form__input--error');
@@ -31,6 +32,7 @@ function saveAuthenticatedSession(response) {
 }
 
 export function initLoginPage() {
+  initTheme();
   const form = document.getElementById('login-form');
   if (!form) return;
 
@@ -100,6 +102,7 @@ export function initLoginPage() {
 }
 
 export function initRegisterPage() {
+  initTheme();
   const form = document.getElementById('register-form');
   if (!form) return;
 

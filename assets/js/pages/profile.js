@@ -3,8 +3,10 @@ import { renderNavbar } from '../components/navbar.js';
 import { clearSession, getToken, isLoggedIn, setSession } from '../utils/authStorage.js';
 import { showToast } from '../utils/notify.js';
 import { getHomeUrl, getPageUrl } from '../utils/pageRoutes.js';
+import { initTheme } from '../utils/theme.js';
 
 export async function initProfilePage() {
+  initTheme();
   renderNavbar('profile');
   if (!isLoggedIn()) {
     window.location.href = getPageUrl('login.html');

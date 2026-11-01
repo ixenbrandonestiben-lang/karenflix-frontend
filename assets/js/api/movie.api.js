@@ -12,6 +12,7 @@ function getMovieList(endpoint, params) {
   const query = new URLSearchParams();
   if (params.category) query.set('category', params.category);
   if (params.title) query.set('title', params.title);
+  if (params.sort) query.set('sort', params.sort);
   if (params.page) query.set('page', params.page);
   if (params.limit) query.set('limit', params.limit);
   const qs = query.toString();
