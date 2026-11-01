@@ -1,5 +1,8 @@
 // HTTP client wrapper with JWT injection
-const BASE_URL = 'http://localhost:4000/api/v1';
+const localHosts = new Set(['localhost', '127.0.0.1']);
+const BASE_URL = localHosts.has(window.location.hostname)
+  ? 'http://localhost:4000/api/v1'
+  : 'https://karenflix-backend.onrender.com/api/v1';
 
 import { getToken } from '../utils/authStorage.js';
 
